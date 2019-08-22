@@ -1,0 +1,62 @@
+{
+    "name": "LA_SENet12_LPSseg_uf_seg600",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "se_resnet12",
+        "args": {}
+    },
+    "train_data_loader": {
+        "type": "SpoofDataLoaderBalanceSample",
+        "args":{
+            "scp_file": "data_LA/trn_dev_eval_scps/ASVspoof2019_LA_LPS_uf_seg600_train.scp",
+            "data_dir": "data_LA/LPS_863",
+            "batch_size": 64,
+            "shuffle": true,
+            "validation_split": 0.0,
+            "num_workers": 2
+        }
+    },
+    "dev_data_loader": {
+        "type": "SpoofDataLoaderBalanceSample",
+        "args":{
+            "scp_file": "data_LA/trn_dev_eval_scps/ASVspoof2019_LA_LPS_uf_seg600_train.scp",
+            "data_dir": "data_LA/LPS_863",
+            "batch_size": 64,
+            "shuffle": true,
+            "validation_split": 0.0,
+            "num_workers": 1
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "betas": [0.9, 0.999],
+            "eps": 1e-9,
+            "weight_decay": 1e-3,
+            "amsgrad": true
+        }
+    },
+    "loss": {
+        "type": "NllLoss",
+        "args": {}
+    },
+    
+    "metrics": [
+        "accuracy"
+    ],
+    "lr_scheduler": null,
+    "trainer": {
+        "epochs": 100,
+
+        "save_dir": "_saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        
+        "monitor": "max val_accuracy",
+        "early_stop": 5,
+        
+        "tensorboardX": true
+    }
+}
