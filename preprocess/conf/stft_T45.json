@@ -1,0 +1,8 @@
+{
+    "sample_rate": 16000,
+    "n_fft": 1724,
+    "win_length": 1724,
+    "hop_length": 130,
+    "window": "blackman",
+    "pre_emphasis": null
+}
