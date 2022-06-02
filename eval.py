@@ -34,7 +34,7 @@ def main(config, resume, protocol_file, asv_score_file):
     # )
 
     data_loader = getattr(module_data, config['dev_data_loader']['type'])(
-        "./data_LA/trn_dev_eval_scps/ASVspoof2019_LA_LPS_uf_seg600_eval.scp",
+        "/data/longnv/trn_dev_eval_scps/ASVspoof2019_LA_LPS_uf_seg600_eval.scp",
         config['dev_data_loader']['args']['data_dir'],
         batch_size=32,
         shuffle=False,

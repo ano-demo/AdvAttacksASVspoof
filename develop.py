@@ -107,7 +107,7 @@ def main(config, resume, protocol_file, asv_score_file):
     tdcf, eer = evaluate_tdcf_eer(cm_score_file, asv_score_file, print_cost=True) 
     _, eer_point = evaluate_eer(cm_score_file)
     logger.info({"min-tDCF": tdcf, "EER": eer, "EER_point": eer_point})
-    l
+    
 
 
 if __name__ == '__main__':
