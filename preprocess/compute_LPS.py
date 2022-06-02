@@ -39,6 +39,7 @@ def _process_utterance(out_dir, utt_idx, wav_path, stft_conf):
 
 def preprocess(wavlist, out_dir, stft_conf, nj):
     os.makedirs(out_dir, exist_ok=True)
+    print("dir made!")
     metadata = build_from_path(wavlist, out_dir, stft_conf, nj)
     # write_metadata(metadata, out_dir)
 
@@ -52,16 +53,21 @@ def preprocess(wavlist, out_dir, stft_conf, nj):
 #     print('Wrote %d utterances, %d time steps (%.2f hours)' % (len(metadata), samples, hours))
 
 if __name__ == "__main__":
+    RootDir="/data/longnv/OutDir"
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in_dir', type=str, default='/scratch/sxliu/projects/asvspoof/ASVspoof2019-data/')
-    parser.add_argument('--num_workers', type=int, default=20)
-    parser.add_argument('--out_dir', type=str, default='./_feats/LPS2')
-    parser.add_argument('--access_type', type=str, default='PA')
+    parser.add_argument('--in_dir', type=str, default='/data/Dataset/ASVspoof/')
+    parser.add_argument('--num_workers', type=int, default=16)
+    parser.add_argument('--out_dir', type=str, default='/root/ADV/LPS2/')
+    parser.add_argument('--access_type', type=str, default='LA')
     parser.add_argument('--param_json_path', type=str, default='./features/conf/stft.json')
     args = parser.parse_args()
 
     args.num_workers = args.num_workers if args.num_workers is not None else cpu_count()
-    print("number of workers: ", args.num_workers)
+
+    print("************ARGUMENT LIST:\n")
+    for k,v in sorted(vars(args).items()):
+        print("{0}: {1}".format(k,v))
+    print("\n")
 
 
     wavfile_dir_train = os.path.join(args.in_dir, args.access_type, f"ASVspoof2019_{args.access_type}_train", "flac")
@@ -72,6 +78,8 @@ if __name__ == "__main__":
     wavfile_list_dev = glob.glob(os.path.join(wavfile_dir_dev, "*.flac"))
     wavfile_list_eval = glob.glob(os.path.join(wavfile_dir_eval, "*.flac"))
 
+    print("************WAV LIST:\n")
+    print(wavfile_dir_train)
     # extract LPS for training set 
     with codecs.open(args.param_json_path, 'r', encoding='utf-8') as f:
         stft_conf = json.load(f)

@@ -1,5 +1,5 @@
 
-GPU=0
+GPU=1
 
 # python develop.py --resume _saved/models/PA_SENet34_LPS_uf_seg200hop100/20190424_220438/model_best.pth \
 #                   --protocol_file data/ASVspoof2019.PA.cm.dev.trl.txt \
@@ -24,7 +24,7 @@ GPU=0
 #                   --asv_score_file data_LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt \
 #                   --device ${GPU}
 
-python develop.py  --resume _saved/models/LA_lcnn_LPSseg_uf_seg600/20190620_121836/model_best.pth \
-                    --protocol_file data_LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.dev.trl.txt \
-                    --asv_score_file data_LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt \
+python develop.py  --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20220602_083934/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.dev.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt \
                     --device ${GPU}    
