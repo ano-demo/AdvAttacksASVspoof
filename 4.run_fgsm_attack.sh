@@ -1,5 +1,5 @@
 
-GPU=3
+GPU=1
 sysid=A11
 
 # SENet12
