@@ -27,7 +27,8 @@ def main(config, resume, protocol_file, asv_score_file):
     data_loader = getattr(module_data, config['dev_data_loader']['type'])(
         None,
         config['dev_data_loader']['args']['data_dir'],
-        batch_size=128,
+        # batch_size=128,
+        batch_size=32,
         shuffle=False,
         validation_split=0.0,
         num_workers=2,

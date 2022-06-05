@@ -1,16 +1,28 @@
 
 GPU=1
 
+                 
 
-#python eval3.py    --resume _saved/models/LA_SENet12_LPSseg_uf_seg600/20190628_185040/checkpoint-epoch7.pth \
-#                  --protocol_file data_LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
-#                  --asv_score_file data_LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-#                  --device ${GPU}
-
-python eval.py  --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20220602_083934/model_best.pth \
+echo "LCNN HALF" >> /data/longnv/OutDir/result__20220605_EVAL.txt     
+python eval.py  --resume /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20220603_083303/model_best.pth \
                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU}
+                    --device ${GPU} >> /data/longnv/OutDir/result__20220605_EVAL.txt
+
+
+echo "SENET12" >> /data/longnv/OutDir/result__20220605_EVAL.txt
+python eval.py  --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20220603_065018/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20220605_EVAL.txt
+
+
+echo "LCNN" >> /data/longnv/OutDir/result__20220605_EVAL.txt
+python eval.py  --resume /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20220603_103336/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20220605_EVAL.txt
+
 
 # python develop.py --resume _saved/models/PA_SENet34_LPS_uf_seg200hop100/20190424_220438/model_best.pth \
 #                   --protocol_file data/ASVspoof2019.PA.cm.dev.trl.txt \
