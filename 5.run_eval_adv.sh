@@ -1,9 +1,15 @@
 
-GPU=3
+GPU=1
 
 sysid=A11
 
 epsilon=1.0
+python eval_adv.py  --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20220603_065018/model_best.pth \
+				--adv_data /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20220603_065018/fgsm_adv_egs_None_${epsilon} \
+				--protocol_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt  \
+                --device ${GPU} >> /data/longnv/OutDir/result_20220610_EVAL_ADV_SEnet12.txt
+
 
 # for eps in 0.1 1.0 5.0 10.0 25.0 50.0 100.0
 # do
@@ -22,11 +28,11 @@ epsilon=1.0
 # 	                   --device ${GPU}
 
 # LCNN model
-python eval3_adv.py    --resume _saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20190624_145447/model_best.pth \
-					   --adv_data _saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20190624_145447/pgd_adv_egs_${sysid}_${epsilon} \
-	                   --protocol_file data_LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl_${sysid}.txt \
-	                   --asv_score_file data_LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores_${sysid}.txt \
-	                   --device ${GPU}
+# python eval3_adv.py    --resume _saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20190624_145447/model_best.pth \
+# 					   --adv_data _saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20190624_145447/pgd_adv_egs_${sysid}_${epsilon} \
+# 	                   --protocol_file data_LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl_${sysid}.txt \
+# 	                   --asv_score_file data_LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores_${sysid}.txt \
+# 	                   --device ${GPU}
 
 # origin performance of adv. attack
 # python eval3_adv.py    --resume _saved/models/LA_SENet34_LPSseg_uf_seg600/20190623_093457/checkpoint-epoch5.pth \

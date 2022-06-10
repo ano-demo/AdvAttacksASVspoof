@@ -64,7 +64,6 @@ def main(config, resume, sysid, protocol_file, asv_score_file, epsilon):
     data_dir = config['dev_data_loader']['args']['data_dir']
     output_dir = os.path.join(os.path.dirname(resume), f'fgsm_adv_egs_{sysid}_{epsilon}')
     os.makedirs(output_dir, exist_ok=True)
-
     loss_fn = config.initialize('loss', module_loss)
     if hasattr(loss_fn, 'it'):
         loss_fn.it = inf
@@ -232,7 +231,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--device', default=None, type=str,
                         help='indices of GPUs to enable (default: all)')
     
-    # epsilon_list = [500.0, 200.0, 90.0, 80.0, 70.0, 50.0, 20.0, 10.0, 0.1]
+    # Each would generate nearly 100GB of data, BE CAREFUL
     epsilon_list = [100.0, 50.0, 25.0, 10.0, 5.0, 1.0, 0.1]
     n_es = len(epsilon_list)
 
