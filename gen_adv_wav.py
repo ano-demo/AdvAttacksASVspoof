@@ -5,7 +5,7 @@ import subprocess
 from tqdm import tqdm
 from preprocess.generic import load_wav_snf, stft, save_wav, revert_power_db_to_wav
 
-NUM_UTTS = 5
+NUM_UTTS = 4913
 NUM_FRAMES = 600
 
 
@@ -27,7 +27,7 @@ def main(args):
         if sysid == '-': continue
 
         print("Processing system: ", sysid)
-
+        
         cur_out_dir = os.path.join(output_dir, sysid)
         os.makedirs(cur_out_dir, exist_ok=True)
 
@@ -47,7 +47,7 @@ def main(args):
             adv_wav = revert_power_db_to_wav(spec, adv_spec)
             save_wav(adv_wav, os.path.join(cur_out_dir, utt_id + "_adv.wav"))
             save_wav(wav, os.path.join(cur_out_dir, utt_id + ".wav"))
-
+            print("count: {}".format(cnt))
             cnt += 1
             if cnt > NUM_UTTS:
                 break

@@ -231,8 +231,8 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--device', default=None, type=str,
                         help='indices of GPUs to enable (default: all)')
     
-    # Each would generate nearly 100GB of data, BE CAREFUL
-    epsilon_list = [100.0, 50.0, 25.0, 10.0, 5.0, 1.0, 0.1]
+    # Each would generate  162GB of data, BE CAREFUL
+    epsilon_list = [5.0, 1.0, 0.1]
     n_es = len(epsilon_list)
 
     args = parser.parse_args()
