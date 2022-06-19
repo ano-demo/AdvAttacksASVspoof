@@ -77,7 +77,6 @@ def main(config, resume, sysid, protocol_file, asv_score_file, epsilon):
         loss_fn = config.initialize('loss', module_loss)
     else:
         loss_fn = nn.CrossEntropyLoss(reduction='none')
-
     # loss_fn = nn.CrossEntropyLoss(reduction='none')
     # loss_fn = nn.NLLLoss(reduction='none')
 
@@ -114,7 +113,10 @@ def main(config, resume, sysid, protocol_file, asv_score_file, epsilon):
         data, target = data.to(device), target.to(device)
         delta = pgd_linf_rand(model, data, target, epsilon, alpha, num_iters, restarts, loss_fn)
         data_perturbed = data + delta
-        data_perturbed = data_perturbed.detach().squeeze_().cpu().numpy()
+        #data_perturbed = data_perturbed.detach().squeeze_().cpu().numpy()
+        with torch.no_grad():
+            data_perturbed = data_perturbed.squeeze_().cpu().numpy()
+
         for index, utt_id in enumerate(utt_list):
             cur_data = data_perturbed[index]
             np.save(os.path.join(output_dir, f"{utt_id}.npy"), cur_data, allow_pickle=False)
@@ -133,7 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--protocol_file', default=None, type=str,
                         help='Protocol file: e.g., data/ASVspoof2019.PA.cm.dev.trl.txt')
     parser.add_argument('-a', '--asv_score_file', default=None, type=str,
-                        help='Protocol file: e.g., data/ASVspoof2019_PA_dev_asv_scores_v1.txt')    
+                        help='Score file: e.g., data/ASVspoof2019_PA_dev_asv_scores_v1.txt')    
     parser.add_argument('-d', '--device', default=None, type=str,
                         help='indices of GPUs to enable (default: all)')
     

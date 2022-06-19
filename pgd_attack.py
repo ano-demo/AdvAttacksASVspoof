@@ -146,7 +146,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--protocol_file', default=None, type=str,
                         help='Protocol file: e.g., data/ASVspoof2019.PA.cm.dev.trl.txt')
     parser.add_argument('-a', '--asv_score_file', default=None, type=str,
-                        help='Protocol file: e.g., data/ASVspoof2019_PA_dev_asv_scores_v1.txt')    
+                        help='Score file: e.g., data/ASVspoof2019_PA_dev_asv_scores_v1.txt')    
     parser.add_argument('-d', '--device', default=None, type=str,
                         help='indices of GPUs to enable (default: all)')
     
