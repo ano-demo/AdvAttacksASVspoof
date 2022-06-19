@@ -16,15 +16,16 @@ def main(args):
     sys_keys = eval_protocol_data[:, 3]
 
     sys_list = list(set(sys_keys))
-    print("System list: ", sys_list)
+    print("System list: {}, total: {}".format(sys_list, len(sys_list)))
 
     output_dir = os.path.join(os.path.dirname(args.adv_spec_dir), os.path.basename(args.adv_spec_dir) + "_wav")
     os.makedirs(output_dir, exist_ok=True)
+    print("Output dir: {}".format(output_dir))
 
     for sysid in sys_list:
         
         cnt = 0
-        if sysid == '-': continue
+        #if sysid == '-': continue
 
         print("Processing system: ", sysid)
         
@@ -43,11 +44,12 @@ def main(args):
             wav = load_wav_snf(flac_file)
             spec = stft(wav, n_fft=1724, hop_length=130, win_length=1724, window="blackman")
             if spec.shape[0] < NUM_FRAMES:
+                print("count: {}, file: {}".format(cnt,flac_file))
                 continue
             adv_wav = revert_power_db_to_wav(spec, adv_spec)
             save_wav(adv_wav, os.path.join(cur_out_dir, utt_id + "_adv.wav"))
             save_wav(wav, os.path.join(cur_out_dir, utt_id + ".wav"))
-            print("count: {}".format(cnt))
+            
             cnt += 1
             if cnt > NUM_UTTS:
                 break
