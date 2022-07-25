@@ -1,7 +1,7 @@
 # AdvAttacksASVspoof
 This is the official implementation of the paper "Adversarial Attacks on Spoofing Countermeasures of automatic speaker verification", which is accepted by ASRU 2019.
 
-- If you use our organized upstream interface and features, or the *SUPERB* downstream benchmark, please consider citing the following:
+If you use our code is useful, please consider citing the following:
 ```
 @inproceedings{liu2019adversarial,
   title={Adversarial attacks on spoofing countermeasures of automatic speaker verification},
