@@ -5,6 +5,17 @@ from torch.autograd import Variable
 # def nll_loss(output, target):
 #     return F.nll_loss(output, target)
 
+### Define distillation loss function
+
+class KDloss(nn.Module):
+    def __init__(self):
+        super(KDloss, self).__init__()
+        self.loss = nn.KLDivLoss(reduction='batchmean')
+    def forward(self, y, labels, teacher_scores, T=1, alpha=0.5):
+        return self.loss(F.log_softmax(y[0]/T), F.softmax(teacher_scores[0]/T)) * (T*T * 2.0 * alpha) + F.cross_entropy(y[0], labels) * (1. - alpha)
+        #return self.loss(y[0]/T, teacher_scores[0]/T) * (T*T * 2.0 * alpha) + F.cross_entropy(y[0], labels) * (1. - alpha)
+
+
 class NllLoss(nn.Module):
     def __init__(self):
         super(NllLoss, self).__init__()
