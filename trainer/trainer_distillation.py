@@ -21,11 +21,9 @@ class Trainer(BaseTrainer):
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
-        # load the teacher model
+        # init the teacher model
         self.teacher_model = se_resnet34().to(self.device)
-        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/model_best.pth")
-        self.teacher_model.load_state_dict(teacher_state['state_dict'])
-        self.teacher_model.eval()
+
 
     def _eval_metrics(self, output, target):
         acc_metrics = np.zeros(len(self.metrics))
@@ -52,6 +50,9 @@ class Trainer(BaseTrainer):
         """
         self.model.train()
         # load the teacher model
+        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/model_best.pth")
+        self.teacher_model.load_state_dict(teacher_state['state_dict'])
+        self.teacher_model.eval()
 
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
@@ -121,8 +122,8 @@ class Trainer(BaseTrainer):
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
-        for name, p in self.model.named_parameters():
-            self.writer.add_histogram(name, p, bins='auto')
+        # for name, p in self.model.named_parameters():
+        #     self.writer.add_histogram(name, p, bins='auto')
 
         return {
             'val_loss': total_val_loss / len(self.valid_data_loader),
