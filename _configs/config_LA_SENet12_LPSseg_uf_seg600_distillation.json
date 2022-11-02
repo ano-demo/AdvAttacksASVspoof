@@ -1,6 +1,6 @@
 {
     "name": "LA_SENet12_LPSseg_uf_seg600",
-    "n_gpu": 1,
+    "n_gpu": 4,
 
     "arch": {
         "type": "se_resnet12",

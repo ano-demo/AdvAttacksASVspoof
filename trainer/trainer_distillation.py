@@ -5,7 +5,7 @@ from .base_trainer import BaseTrainer
 from tqdm import tqdm
 from model.senet import se_resnet34, se_resnet12
 
-class Trainer(BaseTrainer):
+class TrainerDistillation(BaseTrainer):
     """
     Trainer class
 
@@ -113,7 +113,7 @@ class Trainer(BaseTrainer):
                 data, target = data.to(self.device), target.to(self.device)
                 teacher_output = self.teacher_model(data)
                 output = self.model(data)
-                loss = self.loss(output, target, teacher_output) # replace with distillation loss
+                loss = self.loss(output, target, teacher_output) # replace with distillation loss: fixme
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar('loss', loss.item())
