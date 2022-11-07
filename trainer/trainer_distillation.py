@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torch.nn as nn
 # from torchvision.utils import make_grid
 from .base_trainer import BaseTrainer
 from tqdm import tqdm
@@ -14,16 +15,13 @@ class TrainerDistillation(BaseTrainer):
     """
     def __init__(self, model, loss, metrics, optimizer, config,
                  data_loader, valid_data_loader=None, lr_scheduler=None):
-        super(Trainer, self).__init__(model, loss, metrics, optimizer, config)
+        super(TrainerDistillation, self).__init__(model, loss, metrics, optimizer, config)
         self.config = config
         self.data_loader = data_loader
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
-        # init the teacher model
-        self.teacher_model = se_resnet34().to(self.device)
-
 
     def _eval_metrics(self, output, target):
         acc_metrics = np.zeros(len(self.metrics))
@@ -50,9 +48,13 @@ class TrainerDistillation(BaseTrainer):
         """
         self.model.train()
         # load the teacher model
-        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/model_best.pth")
-        self.teacher_model.load_state_dict(teacher_state['state_dict'])
+
+        self.teacher_model = new_model(output_layer='avgpool').to(self.device)
         self.teacher_model.eval()
+        print("********************")
+        print("********************")
+        print("********************")
+        print("teacher model loaded", self.teacher_model)
 
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
@@ -60,10 +62,11 @@ class TrainerDistillation(BaseTrainer):
             data, target = data.to(self.device), target.to(self.device)
             
             self.optimizer.zero_grad()
-            output = self.model(data)
-            teacher_output = self.teacher_model(data)
-            loss = self.loss(output, target, teacher_output) # replace with distillation loss
- 
+            output, x_student = self.model(data)
+            x_teacher = self.teacher_model(data)
+            loss = self.loss(output, target, x_teacher) # replace with distillation loss
+            print("x_student", x_student.shape)
+            print("x_teacher", x_teacher.shape)
             loss.backward()
             self.optimizer.step()
 
@@ -129,3 +132,32 @@ class TrainerDistillation(BaseTrainer):
             'val_loss': total_val_loss / len(self.valid_data_loader),
             'val_metrics': (total_val_metrics / len(self.valid_data_loader)).tolist()
         }
+
+
+class new_model(nn.Module):
+    """
+    extract intermediate features from the model
+    """
+    def __init__(self,output_layer = None):
+        super().__init__()
+        self.pretrained = se_resnet34()#.to(self.device)
+        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/model_best.pth")
+        self.pretrained.load_state_dict(teacher_state['state_dict'])
+
+        self.output_layer = output_layer
+        self.layers = list(self.pretrained._modules.keys())
+        self.layer_count = 0
+        for l in self.layers:
+            if l != self.output_layer:
+                self.layer_count += 1
+            else:
+                break
+        for i in range(1,len(self.layers)-self.layer_count):
+            self.dummy_var = self.pretrained._modules.pop(self.layers[-i])
+        
+        self.net = nn.Sequential(self.pretrained._modules)
+        self.pretrained = None
+
+    def forward(self,x):
+        x = self.net(x)
+        return x

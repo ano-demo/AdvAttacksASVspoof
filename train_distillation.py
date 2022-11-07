@@ -8,7 +8,7 @@ import model.loss as module_loss
 import model.metric as module_metric
 import model as module_arch
 from parse_config import ConfigParser
-from trainer import Trainer
+from trainer import TrainerDistillation
 
 torch.manual_seed(2019)  #cpu
 torch.cuda.manual_seed(2019) #gpu
@@ -25,7 +25,7 @@ def main(config):
 
     # build model architecture, then print to console
     model = config.initialize('arch', module_arch)
-    logger.info(model)
+    #logger.info(model)
 
     # get function handles of loss and metrics
     loss = config.initialize('loss', module_loss)
@@ -41,7 +41,7 @@ def main(config):
     else:
         lr_scheduler = None
         
-    trainer = Trainer(model, loss, metrics, optimizer,
+    trainer = TrainerDistillation(model, loss, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,

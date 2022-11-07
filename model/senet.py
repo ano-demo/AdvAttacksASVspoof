@@ -141,7 +141,7 @@ class ResNet(nn.Module):
 
         # if self.focal_loss: return out 
         if not eval:
-            return (F.log_softmax(out, dim=-1), None)
+            return (F.log_softmax(out, dim=-1), x)
         else:
             return F.log_softmax(out, dim=-1)
 
