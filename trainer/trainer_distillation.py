@@ -5,7 +5,6 @@ import torch.nn as nn
 from .base_trainer import BaseTrainer
 from tqdm import tqdm
 from model.senet import se_resnet34, se_resnet12
-
 class TrainerDistillation(BaseTrainer):
     """
     Trainer class
@@ -51,29 +50,24 @@ class TrainerDistillation(BaseTrainer):
 
         self.teacher_model = new_model(output_layer='avgpool').to(self.device)
         self.teacher_model.eval()
-        print("********************")
-        print("********************")
-        print("********************")
-        print("teacher model loaded", self.teacher_model)
-
+ 
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
         for batch_idx, (_, data, target) in enumerate(self.data_loader):
             data, target = data.to(self.device), target.to(self.device)
             
             self.optimizer.zero_grad()
-            output, x_student = self.model(data)
-            x_teacher = self.teacher_model(data)
-            loss = self.loss(output, target, x_teacher) # replace with distillation loss
-            print("x_student", x_student.shape)
-            print("x_teacher", x_teacher.shape)
+            student_output, x_student = self.model(data)
+            x_teacher = self.teacher_model(data)     
+            loss = self.loss(student_output, target, x_student, x_teacher) # replace with distillation loss
+
             loss.backward()
             self.optimizer.step()
 
             self.writer.set_step((epoch - 1) * len(self.data_loader) + batch_idx)
             self.writer.add_scalar('loss', loss.item())
             total_loss += loss.item()
-            total_metrics += self._eval_metrics(output[0], target)  # 0=cos_theta 1=phi_theta
+            total_metrics += self._eval_metrics(student_output, target)  # 0=cos_theta 1=phi_theta
 
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} [{}/{} ({:.0f}%)] Loss: {:.6f}'.format(
@@ -114,14 +108,13 @@ class TrainerDistillation(BaseTrainer):
         with torch.no_grad():
             for batch_idx, (_, data, target) in enumerate(tqdm(self.valid_data_loader)):
                 data, target = data.to(self.device), target.to(self.device)
-                teacher_output = self.teacher_model(data)
-                output = self.model(data)
-                loss = self.loss(output, target, teacher_output) # replace with distillation loss: fixme
+                student_output = self.model(data)
+                loss = self.loss(student_output, target, eval=True) # DO NOT replace with distillation loss, use cross entropy loss instead
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar('loss', loss.item())
                 total_val_loss += loss.item()
-                total_val_metrics += self._eval_metrics(output[0], target)   # 0=cos_theta 1=phi_theta
+                total_val_metrics += self._eval_metrics(student_output, target)   # 0=cos_theta 1=phi_theta
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
@@ -160,4 +153,5 @@ class new_model(nn.Module):
 
     def forward(self,x):
         x = self.net(x)
-        return x
+        #return x
+        return nn.Flatten()(x)
