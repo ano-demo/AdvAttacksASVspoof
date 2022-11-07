@@ -13,7 +13,7 @@ class TrainerDistillation(BaseTrainer):
         Inherited from BaseTrainer.
     """
     def __init__(self, model, loss, metrics, optimizer, config,
-                 data_loader, valid_data_loader=None, lr_scheduler=None):
+                data_loader, valid_data_loader=None, lr_scheduler=None):
         super(TrainerDistillation, self).__init__(model, loss, metrics, optimizer, config)
         self.config = config
         self.data_loader = data_loader
@@ -50,7 +50,7 @@ class TrainerDistillation(BaseTrainer):
 
         self.teacher_model = new_model(output_layer='avgpool').to(self.device)
         self.teacher_model.eval()
- 
+
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
         for batch_idx, (_, data, target) in enumerate(self.data_loader):
@@ -68,7 +68,6 @@ class TrainerDistillation(BaseTrainer):
             self.writer.add_scalar('loss', loss.item())
             total_loss += loss.item()
             total_metrics += self._eval_metrics(student_output, target)  # 0=cos_theta 1=phi_theta
-
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} [{}/{} ({:.0f}%)] Loss: {:.6f}'.format(
                     epoch,
@@ -108,7 +107,7 @@ class TrainerDistillation(BaseTrainer):
         with torch.no_grad():
             for batch_idx, (_, data, target) in enumerate(tqdm(self.valid_data_loader)):
                 data, target = data.to(self.device), target.to(self.device)
-                student_output = self.model(data)
+                student_output, _ = self.model(data)
                 loss = self.loss(student_output, target, eval=True) # DO NOT replace with distillation loss, use cross entropy loss instead
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
