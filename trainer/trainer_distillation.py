@@ -59,7 +59,7 @@ class TrainerDistillation(BaseTrainer):
             self.optimizer.zero_grad()
             student_output, x_student = self.model(data)
             x_teacher = self.teacher_model(data)     
-            loss = self.loss(student_output, target, x_student, x_teacher) # replace with distillation loss
+            loss = self.loss(student_output, target, student_scores=x_student, teacher_scores=x_teacher) # replace with distillation loss
 
             loss.backward()
             self.optimizer.step()
@@ -133,7 +133,8 @@ class new_model(nn.Module):
     def __init__(self,output_layer = None):
         super().__init__()
         self.pretrained = se_resnet34()#.to(self.device)
-        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/model_best.pth")
+        self.pretrained = nn.DataParallel(self.pretrained) #wrap the model in DataParallel in order to load state_dict successfully
+        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221110_120043_BS512_LR0.00001/model_best.pth")
         self.pretrained.load_state_dict(teacher_state['state_dict'])
 
         self.output_layer = output_layer
@@ -150,7 +151,9 @@ class new_model(nn.Module):
         self.net = nn.Sequential(self.pretrained._modules)
         self.pretrained = None
 
-    def forward(self,x):
+    def forward(self, x):
         x = self.net(x)
-        #return x
-        return nn.Flatten()(x)
+        # we have to use 2nd dimension so that the teacher can output the embedding that has the same dimension as the student
+        # this happened because in model/senet.py, the last layer has been changed to Log_softmax(2) + embedding
+        # if we train the teacher using the original code, then this is not necessary: x[1] -> x
+        return nn.Flatten()(x[1])
