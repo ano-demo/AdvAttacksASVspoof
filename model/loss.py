@@ -12,25 +12,17 @@ class KDloss(nn.Module):
     def __init__(self):
         super(KDloss, self).__init__()
         self.loss = nn.KLDivLoss(reduction='batchmean')
-    def forward(self, y, labels, student_scores=None, teacher_scores=None, T=1, alpha=0.3, eval=False):
+    def forward(self, y, labels, student_scores=None, teacher_scores=None, T=1, alpha=0.5, eval=False):
         # y is the output of the student network
         # dimension of y is (batch_size=64, num_classes=2)
-        #return self.loss(F.log_softmax(y[0]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1)) * (T*T * 2.0 * alpha) + F.cross_entropy(torch.exp(y[0]), labels) * (1. - alpha)
-        # with open("./test_softmax_scores_1logsoftmax.txt","a") as f:
-        #     #f.writelines([str(self.loss(F.log_softmax(y[0]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1)) * (alpha)), str(F.cross_entropy(y[0], labels) * (1. - alpha))])
-        #     f.writelines(["y[0]= , labels= ", str(y[0]), str(labels), " LOSS= ",str(alpha*self.loss(F.log_softmax(y[0]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1))), str((1-alpha)*F.cross_entropy(torch.exp(y[0]), labels) )])
-        #     f.writelines("\n")
-
         # cross_entropy is the same as nll_loss with log_softmax
-        # labels are class indices, y[0] is log_softmax output
-        # return self.loss(y[0], torch.exp(teacher_scores[0])) * (alpha) + F.nll_loss(y[0], labels) * (1. - alpha) # input: log(prob), target: prob
-        # return self.loss(F.log_softmax(y[0]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1)) * (T * T * 2.0 * alpha) + F.nll_loss(y[0], labels) * (1. - alpha) # 20221028_221005
-        #return self.loss(F.log_softmax(y[1]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1)) * (T * T * 2.0 * alpha) + F.cross_entropy(torch.exp(y[0]), labels) * (1. - alpha) # 20221029_1510....
         if eval:
-            return F.cross_entropy(torch.exp(y), labels) * (1. - alpha) 
-
-        return self.loss(F.log_softmax(student_scores/T,dim=1), F.softmax(teacher_scores/T,dim=1)) * (T * T * 2.0 * alpha) + F.cross_entropy(torch.exp(y), labels) * (1. - alpha) 
-        #return self.loss(F.log_softmax(y[0]/T,dim=1), F.softmax(teacher_scores[0]/T,dim=1)) * (T * T * 2.0 * alpha) + F.cross_entropy(y[0], labels) * (1. - alpha)
+            return F.cross_entropy(torch.exp(y), labels) 
+        with open("./test_softmax_logsoftmax_scores.txt","a") as f:
+            f.writelines(["CROSS ENTROPY LOSS= ",str(F.cross_entropy(torch.exp(y), labels) * (1. - alpha)) ,"DISTILLATION LOSS= ",str(self.loss(F.log_softmax(student_scores/T,dim=1), F.softmax(teacher_scores/T,dim=1)) * (T * T * 2.0 * alpha))])
+            f.writelines("\n")        
+        # return self.loss(F.log_softmax(student_scores/T,dim=1), F.softmax(teacher_scores/T,dim=1)) * (T * T * 2.0 * alpha) + F.cross_entropy(torch.exp(y), labels) * (1. - alpha) 
+        return self.loss(F.log_softmax(student_scores/T,dim=1), F.softmax(teacher_scores/T,dim=1)) * (T * T * 2.0 * alpha) + F.nll_loss(y, labels) * (1. - alpha) 
 
 class NllLoss(nn.Module):
     def __init__(self):
