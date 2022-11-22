@@ -49,7 +49,7 @@ class AngleLoss(nn.Module):
 
         index = cos_theta.data * 0.0 #size=(B,Classnum)
         index.scatter_(1,target.data.view(-1,1),1)
-        index = index.byte()     #to uint8
+        index = index.bool()     #to uint8
         index = Variable(index)
 
         self.lamb = max(self.LambdaMin, self.LambdaMax/(1+0.1*self.it ))
