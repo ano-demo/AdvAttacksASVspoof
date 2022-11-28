@@ -232,7 +232,7 @@ if __name__ == '__main__':
                         help='indices of GPUs to enable (default: all)')
     
     # Each would generate  162GB of data, BE CAREFUL
-    epsilon_list = [5.0, 1.0, 0.1]
+    epsilon_list = [5.0]
     n_es = len(epsilon_list)
 
     args = parser.parse_args()
