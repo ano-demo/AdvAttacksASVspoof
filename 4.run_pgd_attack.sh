@@ -1,7 +1,7 @@
-GPU=0
+GPU=1
 # num GPUs > 1 --> out of memory error
 # sysid=A11
-python pgd_attack_2.py  --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221107_161924/checkpoint-epoch5.pth \
+python pgd_attack_2.py  --resume /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20221114_211710/model_best.pth \
 						--epsilon 5.0 \
                   		--protocol_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
 						--asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt  \

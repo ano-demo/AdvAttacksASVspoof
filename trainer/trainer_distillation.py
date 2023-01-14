@@ -134,7 +134,7 @@ class new_model(nn.Module):
         super().__init__()
         self.pretrained = se_resnet34()#.to(self.device)
         self.pretrained = nn.DataParallel(self.pretrained) #wrap the model in DataParallel in order to load state_dict successfully
-        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221110_120043_BS512_LR0.00001/model_best.pth")
+        teacher_state = torch.load("/data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221129_134503_e4/model_best.pth")
         self.pretrained.load_state_dict(teacher_state['state_dict'])
 
         self.output_layer = output_layer

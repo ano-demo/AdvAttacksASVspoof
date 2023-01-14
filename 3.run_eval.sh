@@ -1,6 +1,100 @@
 
-#/data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221107_161924/checkpoint-epoch7.pth
-#/data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221101_110205_NOdistill/
+GPU=2 #cannot run with multiple GPU for now
+
+
+for num in `seq 1 27`; do
+echo CUMBERSOME SENet34
+echo $num
+echo "\n"
+python eval.py --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221129_134503_e4/checkpoint-epoch${num}.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20221129_EVAL_epoch${num}__SENet34_BS512LRe4_.txt
+done
+exit
+exit()
+#/data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20221114_211710 
+
+
+for num in `seq 1 40`; do
+echo  LCNN Half
+echo $num
+echo "\n"
+python eval.py --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20221115_112707/checkpoint-epoch${num}.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20221115_EVAL_epoch${num}__LCNNHalf_BS16LR0.0001_.txt
+done
+exit
+exit()
+
+
+
+
+
+for num in `seq 1 56`; do
+echo CUMBERSOME
+echo $num
+echo "\n"
+python eval.py --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221114_132025_b256e5/checkpoint-epoch${num}.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}__SENet34BS256LRe5_.txt
+done
+exit
+exit()
+
+
+echo DISTILL
+for num in `seq 1 27` ; do
+echo $num
+echo "\n"
+
+python eval.py --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221110_183444_T1a0.5BS128LR0.00001_from_20221110SE34/checkpoint-epoch${num}.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}_T1a0.5_SENet12_DISTILL_128e5_CE_.txt
+done
+exit
+exit()
+
+
+
+
+
+
+
+
+
+
+
+
+echo DISTILL
+for num in `seq 1 48` ; do
+echo $num
+echo "\n"
+
+python eval.py --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221112_222049_64e4_nll/checkpoint-epoch${num}.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> /data/longnv/OutDir/result__20221113_EVAL_epoch${num}_T1a0.5_SENet12_DISTILL_64e4_.txt
+done
+exit
+exit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 GPU=1
@@ -17,17 +111,6 @@ exit
 exit()
 
 
-GPU=2
-for num in 1 2 3 4 5 6 7 8 9 ; do
-echo $num
-echo "\n"
-python eval.py --resume /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221013_053132/checkpoint-epoch${num}.pth \
-                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
-                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU} >> /data/longnv/OutDir/result__20221107_EVAL_epoch${num}_T1a0.3_SENet34_.txt
-done
-exit
-exit()
 
 GPU=3
 for num in 1 2 3 4 5 6 7 8 9 ; do

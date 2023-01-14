@@ -62,5 +62,5 @@ def logpowspec(wav_path, sr=16000, n_fft=512, hop_length=160, win_length=400, wi
     # spec = spec[:-2, :]  # TODO: check why there are two abnormal frames.
     mag_spec = np.abs(spec)
     powspec = np.square(mag_spec)
-    logpowspec = librosa.power_to_db(powspec, ref, amin, top_db)
+    logpowspec = librosa.power_to_db(powspec, ref=ref, amin=amin, top_db=top_db)
     return logpowspec
