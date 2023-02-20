@@ -127,7 +127,9 @@ def main(config, resume, sysid, protocol_file, asv_score_file, epsilon):
         data, target = data.to(device), target.to(device)
         delta = pgd_linf_rand(model, data, target, epsilon, alpha, num_iters, restarts, loss_fn)
         data_perturbed = data + delta
-        data_perturbed = data_perturbed.detach().squeeze_().cpu().numpy()
+        # data_perturbed = data_perturbed.detach().squeeze_().cpu().numpy()
+        with torch.no_grad():
+            data_perturbed = data_perturbed.squeeze_().cpu().numpy()
         for index, utt_id in enumerate(utt_list):
             cur_data = data_perturbed[index]
             np.save(os.path.join(output_dir, f"{utt_id}.npy"), cur_data, allow_pickle=False)
@@ -151,7 +153,7 @@ if __name__ == '__main__':
                         help='indices of GPUs to enable (default: all)')
     
     # epsilon_list = [100.0, 50.0, 25.0, 10.0, 5.0, 1.0, 0.1]
-    # epsilon_list = [ 5.0,]
+    # epsilon_list = [5.0,]
     # n_es = len(epsilon_list)
 
     args = parser.parse_args()
