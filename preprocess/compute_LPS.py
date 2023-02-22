@@ -25,15 +25,27 @@ def build_from_path(wavlist, out_dir, stft_conf, num_workers=1):
     futures = []
     for wav_path in wavlist:
         utt_idx = os.path.basename(wav_path).rstrip('.flac')
-        futures.append(executor.submit(
-            partial(_process_utterance, out_dir, utt_idx, wav_path, stft_conf)))
-    return [future.result() for future in tqdm(futures)]
+        _process_utterance(out_dir, utt_idx, wav_path, stft_conf)
+    #     futures.append(executor.submit(
+    #         partial(_process_utterance, out_dir, utt_idx, wav_path, stft_conf)))
+    # return [future.result() for future in tqdm(futures)]
+    
 
 def _process_utterance(out_dir, utt_idx, wav_path, stft_conf):
-    lps = logpowspec(wav_path, sr=stft_conf['sample_rate'], n_fft=stft_conf['n_fft'], 
+    try:
+        lps = logpowspec(wav_path, sr=stft_conf['sample_rate'], n_fft=stft_conf['n_fft'], 
             hop_length=stft_conf['hop_length'], win_length=stft_conf['win_length'], window=stft_conf['window'], pre_emphasis=stft_conf['pre_emphasis'])
+    except:
+        print("***** ERROR ***** audio file too short \n")
+        with open("./log_short_audio_files.txt","a") as f:
+            f.write(wav_path+"\n")
+        pass
+    
     lps_filename = os.path.join(out_dir, utt_idx+".npy")
-    np.save(lps_filename, lps.astype(np.float32), allow_pickle=False)
+    try:
+        np.save(lps_filename, lps.astype(np.float32), allow_pickle=False)
+    except:
+        pass
     return lps_filename
 
 
