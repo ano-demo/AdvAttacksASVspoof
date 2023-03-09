@@ -1,62 +1,278 @@
+#
+# script to eval 4 models denoise
+#
+echo "LCNN half denoise"
 
-GPU=2 #cannot run with multiple GPU for now
-
-
-for num in `seq 1 27`; do
-echo CUMBERSOME SENet34
-echo $num
-echo "\n"
-python eval.py --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221129_134503_e4/checkpoint-epoch${num}.pth \
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230224_123957/model_best.pth \
                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU} >> /data/longnv/OutDir/result__20221129_EVAL_epoch${num}__SENet34_BS512LRe4_.txt
-done
-exit
-exit()
-#/data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20221114_211710 
+                    --device 0 >> LCNN_half_denoise.txt &
 
+echo "LCNN denoise"
 
-for num in `seq 1 40`; do
-echo  LCNN Half
-echo $num
-echo "\n"
-python eval.py --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20221115_112707/checkpoint-epoch${num}.pth \
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230224_133103/model_best.pth \
                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU} >> /data/longnv/OutDir/result__20221115_EVAL_epoch${num}__LCNNHalf_BS16LR0.0001_.txt
-done
-exit
-exit()
+                    --device 1 >> LCNN_denoise.txt &
 
+echo "SENet12 denoise"
 
-
-
-
-for num in `seq 1 56`; do
-echo CUMBERSOME
-echo $num
-echo "\n"
-python eval.py --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221114_132025_b256e5/checkpoint-epoch${num}.pth \
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230224_152937/model_best.pth  \
                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}__SENet34BS256LRe5_.txt
-done
-exit
-exit()
+                    --device 2 >> SENet12_denoise.txt &
 
+echo "SENet34 denoise"
 
-echo DISTILL
-for num in `seq 1 27` ; do
-echo $num
-echo "\n"
-
-python eval.py --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221110_183444_T1a0.5BS128LR0.00001_from_20221110SE34/checkpoint-epoch${num}.pth \
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230224_155356/model_best.pth  \
                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
-                    --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}_T1a0.5_SENet12_DISTILL_128e5_CE_.txt
-done
+                    --device 3 >> SENet34_denoise.txt &
+
+
+echo done
 exit
-exit()
+
+
+
+# SCRIPT TO EVALUATE DF 2021 dataset
+# 4 models trained with noise
+echo "eval DF"
+python eval_df.py   --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230222_234308/model_best.pth \
+                    --protocol_file   /data/longnv/trn_dev_eval_scps/ASVspoof2021_DF_eval.scp  \
+                    --asv_score_file X \
+                    --device 0 >> LCNN_half_over5k.txt &
+
+python eval_df.py   --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230223_003112/model_best.pth \
+                    --protocol_file   /data/longnv/trn_dev_eval_scps/ASVspoof2021_DF_eval.scp  \
+                    --asv_score_file X \
+                    --device 1 >> LCNN_over5k.txt &
+
+python eval_df.py   --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230223_041446/model_best.pth \
+                    --protocol_file   /data/longnv/trn_dev_eval_scps/ASVspoof2021_DF_eval.scp  \
+                    --asv_score_file X \
+                    --device 2 >> SENet12_over5k.txt &
+
+python eval_df.py   --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230223_053119/model_best.pth  \
+                    --protocol_file   /data/longnv/trn_dev_eval_scps/ASVspoof2021_DF_eval.scp  \
+                    --asv_score_file X \
+                    --device 3 >> SENet34_over5k.txt &
+echo DONE
+exit
+
+echo "LCNN half over 5k"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230222_234308/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device 0 >> LCNN_half_over5k.txt &
+
+echo "LCNN over 5k"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230223_003112/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device 1 >> LCNN_over5k.txt &
+
+echo "SENet12 over 5k"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230223_041446/model_best.pth  \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device 2 >> SENet12_over5k.txt &
+
+echo "SENet34 over 5k"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230223_053119/model_best.pth  \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device 3 >> SENet34_over5k.txt &
+
+
+echo done
+exit
+
+
+
+
+
+
+
+# EVAL NO SILENCE 100-5000
+# /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230211_000058/model_best.pth
+# /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230211_005619/model_best.pth
+# /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230211_024130/model_best.pth
+# /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230211_030100/model_best.pth
+
+#
+# EVAL NO SILENCE 2K-4K
+#
+
+# lcnn half /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230209_213041/model_best.pth 
+# lcnn /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230209_220300/model_best.pth
+# senet12 /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230209_233452/model_best.pth 
+# senet34 /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230209_235944/model_best.pth 
+
+
+
+GPU=3 #cannot run with multiple GPU for now
+
+
+echo "LCNN half no silence 100-5k"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230211_000058/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_half_original_nosilence1005k.txt
+
+echo "LCNN no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230211_005619/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_original_nosilence1005k.txt
+
+echo "SENet12 no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230211_024130/model_best.pth  \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet12_original_nosilence1005k.txt
+
+echo "SENet34 no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230211_030100/model_best.pth  \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet34_original_nosilence1005k.txt
+
+
+echo done
+exit
+#
+# DONE EVAL NO SILENCE 100-5k
+#
+
+#
+# EVAL NO SILENCE
+#
+
+# lcnn half /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230208_030025/model_best.pth
+# lcnn /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230208_033642/model_best.pth
+# senet12 /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230208_062733/model_best.pth 
+# senet34 /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230208_065642/model_best.pth 
+
+
+GPU=3 #cannot run with multiple GPU for now
+
+
+echo "LCNN half no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230208_030025/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_half_original_nosilence.txt
+
+echo "LCNN no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230208_033642/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_original_nosilence.txt
+
+echo "SENet12 no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230208_062733/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet12_original_nosilence.txt
+
+echo "SENet34 no silence"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230208_065642/model_best.pth  \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet34_original_nosilence.txt
+
+
+echo done
+exit
+#
+# DONE EVAL NO SILENCE
+#
+
+
+
+# /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230113_152328/model_best.pth
+# /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230113_161026/model_best.pth
+# /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230113_175511/model_best.pth
+# /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230113_185148/model_best.pth
+
+
+GPU=1 #cannot run with multiple GPU for now
+
+
+echo "LCNN half (2k-4k) on original data (2k-4k)"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnnHalf_LPSseg_uf_seg600/20230113_152328/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_half_2k4k_original_2k4k.txt
+
+echo "LCNN (2k-4k) on original data (2k-4k)"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/20230113_161026/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> LCNN_2k4k_original_2k4k.txt
+
+echo "SENet12 (2k-4k) on original data (2k-4k)"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20230113_175511/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet12_2k4k_original_2k4k.txt
+
+echo "SENet34 (2k-4k) on original data (2k-4k)"
+
+python eval.py      --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20230113_185148/model_best.pth \
+                    --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+                    --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+                    --device ${GPU} >> SENet34_2k4k_original_2k4k.txt
+
+
+echo done
+exit
+
+
+
+
+
+# for num in `seq 1 56`; do
+# echo CUMBERSOME
+# echo $num
+# echo "\n"
+# python eval.py --resume  /data/longnv/_saved/models/LA_SENet34_LPSseg_uf_seg600/20221114_132025_b256e5/checkpoint-epoch${num}.pth \
+#                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+#                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+#                     --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}__SENet34BS256LRe5_.txt
+# done
+# exit
+# exit()
+
+
+# echo DISTILL
+# for num in `seq 1 27` ; do
+# echo $num
+# echo "\n"
+
+# python eval.py --resume /data/longnv/_saved/models/LA_SENet12_LPSseg_uf_seg600/20221110_183444_T1a0.5BS128LR0.00001_from_20221110SE34/checkpoint-epoch${num}.pth \
+#                     --protocol_file  /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt \
+#                     --asv_score_file /data/Dataset/ASVspoof/LA/ASVspoof2019_LA_asv_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt \
+#                     --device ${GPU} >> /data/longnv/OutDir/result__20221114_EVAL_epoch${num}_T1a0.5_SENet12_DISTILL_128e5_CE_.txt
+# done
+# exit
+# exit()
 
 
 

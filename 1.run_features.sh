@@ -5,8 +5,8 @@ echo 'Current Dir: '${RootDir}
 extractLPS=1
 if [ $extractLPS -eq 1 ]; then
     echo 'Extracting Log Power Spectrograms ...'
-    python ./preprocess/compute_LPS.py --in_dir /data/Dataset/ASVspoof/ \
-                                       --out_dir ${RootDir}/LPS_863 \
+    python ./preprocess/compute_LPS.py --in_dir  /datad/temp_data/ASVspoof_denoise/ \
+                                       --out_dir ${RootDir}/LPS_863_denoise \
                                        --access_type LA \
                                        --param_json_path ./preprocess/conf/stft_T45.json
 fi
